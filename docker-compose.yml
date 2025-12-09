@@ -1,33 +1,17 @@
 version: "2.2"
-
 services:
-  nginx:
-    build:
-      context: .
-      dockerfile: web.dockerfile
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    environment:
+      TZ: "Asia/Jakarta"
     ports:
-      - "80:80"
-      - "443:443"
-    networks:
-      - apps-net
-    restart: always
+      - '80:80'
+      - '81:81'
+      - '443:443'
     volumes:
-      - ./nginx/conf/:/etc/nginx/conf.d/:ro
-      - ./certbot/www/:/var/www/certbot/:ro
-      - ./certbot/conf:/etc/nginx/ssl
-#      - ./certbot/conf/live/bot.alrca.com/fullchain.pem:/etc/nginx/ssl/live/bot.alrca.com/fullchain.pem
-#      - ./certbot/conf/live/bot.alrca.com/privkey.pem:/etc/nginx/ssl/live/bot.alrca.com/privkey.pem
-    depends_on:
-      - certbot
-
-  certbot:
-    image: certbot/certbot:latest
-    volumes:
-      - ./certbot/www/:/var/www/certbot/:rw
-      - ./certbot/conf/:/etc/letsencrypt/:rw
-    networks:
-      - apps-net
-
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
 networks:
   apps-net:
     external: true
